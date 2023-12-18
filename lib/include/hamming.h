@@ -10,16 +10,16 @@ namespace HamArc {
 // template <size_t K, size_t N>   
 class HammingCode {
 public:
-    HammingCode(std::ifstream& in, std::ofstream& out);
+    HammingCode(char byte, char bit_count, std::ofstream& out);
     void CodeMsg();
-    std::bitset<8> code_;
+    void DecodeMsg();
 private:
-    
+    std::bitset<8> code_;
     size_t block_len_ = 8;
-    std::ifstream& in_;
     std::ofstream& out_;
     char byte_;
     char bit_count_;
+    
     //size_t GetBlockLen();
 
     
