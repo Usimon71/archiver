@@ -5,24 +5,22 @@
 #include <cmath>
 #include <cinttypes>
 
+#include "arch_writer.h"
+
 namespace HamArc {
     
-// template <size_t K, size_t N>   
+template <size_t K>   
 class HammingCode {
 public:
-    HammingCode(char byte, char bit_count, std::ofstream& out);
+    HammingCode(FileReader& file);
     void CodeMsg();
     void DecodeMsg();
 private:
-    std::bitset<8> code_;
-    size_t block_len_ = 8;
-    std::ofstream& out_;
+    FileReader& file_;
+    std::bitset<(1 << K)> bs_;
     char byte_;
-    char bit_count_;
-    
-    //size_t GetBlockLen();
-
-    
+    const size_t kContrBits = K;
+    const size_t KBlockLen = (1 << K);
     void XorContrBits(size_t i);
 };
 
