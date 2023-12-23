@@ -22,6 +22,9 @@ public:
         std::cerr << "EOF!\n";
         return 0;
     }
+    uint64_t TellG() {
+        return in_.tellg();
+    }
     ~FileReader() {
         in_.close();
     }
@@ -51,9 +54,11 @@ public:
             }
         }
         const char* file_size_char = reinterpret_cast<char*>(&file_size);
-        for (size_t i = 0; i != 8; ++i) {
-            out_.put(file_size_char[i]);
-        }
+        out_.write(file_size_char, sizeof(file_size));
+        // for (size_t i = 0; i != 8; ++i) {
+        //     std::cout << "char " << static_cast<int>(file_size_char[i]) << '\n';
+        //     out_.put(file_size_char[i]);
+        // }
     }
     ~FileWriter() {
         out_.close();
