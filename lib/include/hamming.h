@@ -12,11 +12,14 @@ namespace HamArc {
 template <size_t K>   
 class HammingCode {
 public:
-    HammingCode(FileReader& file);
-    void CodeMsg();
-    void DecodeMsg();
+    HammingCode(FileReader& file_in, FileWriter& file_out)
+        : file_in_(file_in)
+        , file_out_(file_out)
+        {}
+    bool CodeMsg();
 private:
-    FileReader& file_;
+    FileReader& file_in_;
+    FileWriter& file_out_;
     std::bitset<(1 << K)> bs_;
     char byte_;
     const size_t kContrBits = K;

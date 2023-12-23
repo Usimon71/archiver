@@ -5,19 +5,16 @@
 
 
 namespace HamArc{
-
-    template <size_t K>
-    HammingCode<K>::HammingCode(FileReader& file)
-        : file_(file)
-        {}
-    
     uint8_t BitGet(size_t num, size_t bit_number) {
         return ((num >> bit_number) & 1);
+    }
+    void BitSet(char& num, char bit_number) {
+        num |= (1 << bit_number);
     }
 
     template <size_t K>
     void HammingCode<K>::XorContrBits(size_t i) {
-        for (int j = 0; j != 8; ++j) {
+        for (int j = 0; j != sizeof(i) * 8; ++j) {
             if (BitGet(i, j)) {
                 bs_[(1 << j)].flip();
             }
@@ -26,19 +23,27 @@ namespace HamArc{
     }
 
     template <size_t K>
-    void HammingCode<K>::CodeMsg() {
+    bool HammingCode<K>::CodeMsg() {
+        bs_.reset();
+        bool ans = true;
         size_t cur_contr_bit_pos = 1;
         char bit_count = 0;
-        for (size_t i = 0; i != KBlockLen; ++i) {
-            if ((bit_count % 8) == 0) {
-                byte_ = file_.GetByte();
-                bit_count = 0;
-            }
+        int counter = 0;
+        for (size_t i = 1; i != KBlockLen; ++i) {
             if (i != cur_contr_bit_pos) {
+                if ((bit_count % 8) == 0) {
+                    byte_ = file_in_.GetByte();
+                    if (byte_ == 0) {
+                        ans = false ;
+                        break;
+                    }
+                    bit_count = 0;
+                }
                 char bit = BitGet(byte_, bit_count);
                 if (bit) {
                     XorContrBits(i);
                 }
+                ++counter;
                 ++bit_count;
             } else {
                 cur_contr_bit_pos *= 2;
@@ -49,26 +54,22 @@ namespace HamArc{
             sum += bs_[i];
         }
         if ((sum % 2) != 0) {
-            bs_[0].flop();
+            bs_[0].flip();
         }
+        byte_ = 0;
+        for (size_t i = 0; i < KBlockLen; ++i) {
+            if (i % 8 == 0) {
+                std::cout << ' ';
+                file_out_.PutByte(byte_);
+                byte_ = 0;
+            }
+            if (bs_[i]) {
+                BitSet(byte_, (i % 8));
+            }
+            std::cout << static_cast<int>(bs_[i]);
+        }
+        return ans;
     }
     
-    // void HammingCode::DecodeMsg() {
-    //     std::bitset<4> contr_bits;
-    //     for (size_t i = 0; i < block_len_; ++i) {
-    //         if (BitGet(byte_, i)) {
-    //             contr_bits[0].flip();
-    //         }
-    //     }
-    //     for (size_t i = 1; i < block_len_; i += 2) {
-    //         if (BitGet(byte_, i)) {
-    //             contr_bits[1].flip();
-    //         }
-    //     }
-    //     for (size_t i = 2; i < block_len_; i += 2) {
-    //         if (BitGet(byte_, i)) {
-    //             contr_bits[1].flip();
-    //         }
-    //     }
-    // }
+    template class HammingCode<7>;
 }
