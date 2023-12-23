@@ -29,7 +29,7 @@ namespace HamArc{
         size_t cur_contr_bit_pos = 1;
         char bit_count = 0;
         int counter = 0;
-        for (size_t i = 1; i != KBlockLen; ++i) {
+        for (size_t i = 1; i != kBlockLen; ++i) {
             if (i != cur_contr_bit_pos) {
                 if ((bit_count % 8) == 0) {
                     byte_ = file_in_.GetByte();
@@ -50,14 +50,14 @@ namespace HamArc{
             }
         }
         uint64_t sum = 0;
-        for (size_t i = 0; i != KBlockLen; ++i) {
+        for (size_t i = 0; i != kBlockLen; ++i) {
             sum += bs_[i];
         }
         if ((sum % 2) != 0) {
             bs_[0].flip();
         }
         byte_ = 0;
-        for (size_t i = 0; i < KBlockLen; ++i) {
+        for (size_t i = 0; i < kBlockLen; ++i) {
             if (i % 8 == 0) {
                 file_out_.PutByte(byte_);
                 byte_ = 0;
@@ -72,7 +72,30 @@ namespace HamArc{
     template <size_t K>
     bool HammingCode<K>::DeCodeMsg() {
         bs_.reset();
-        
+        char bit_count = 0;
+        for (size_t i = 0; i != kBlockLen; ++i) {
+            if (i % 8 == 0) {
+                byte_ = file_in_.GetByte();
+                bit_count = 0;
+            }
+            if (BitGet(byte_, bit_count)) {
+                bs_.set(i);
+            }
+            ++bit_count;
+        }
+        uint64_t sum = 0;
+        for (size_t i = 0; i != kBlockLen; ++i) {
+            sum += bs_[i];
+        }
+        if (sum % 2 == 0) {
+            std::cout << "No errors detected\n";
+            
+        } else {
+            std::cout << "Error detected!\n";
+            std::bitset<(1 << K)> result;
+
+        }
     }
+    
     template class HammingCode<7>;
 }

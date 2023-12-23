@@ -24,7 +24,7 @@ private:
     std::bitset<(1 << K)> bs_;
     char byte_;
     const size_t kContrBits = K;
-    const size_t KBlockLen = (1 << K);
+    const size_t kBlockLen = (1 << K);
     void XorContrBits(size_t i);
 };
 

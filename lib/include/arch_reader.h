@@ -1,5 +1,6 @@
 #pragma once
 #include "file_rw.h"
+#include "hamming.h"
 
 template <size_t K>
 class ArchReader {
@@ -9,7 +10,7 @@ public:
         , out_path_(out_path)
         {}
     void Read();
-    bool SearchFile(FileReader& file, std::filesystem::path& path_out);
+    uint64_t SearchFile(FileReader& file, std::filesystem::path& path_out);
 private:
     std::filesystem::path in_path_;
     std::filesystem::path out_path_;
