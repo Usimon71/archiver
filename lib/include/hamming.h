@@ -17,6 +17,7 @@ public:
         , file_out_(file_out)
         {}
     bool CodeMsg();
+    bool DeCodeMsg();
 private:
     FileReader& file_in_;
     FileWriter& file_out_;

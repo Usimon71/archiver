@@ -59,7 +59,6 @@ namespace HamArc{
         byte_ = 0;
         for (size_t i = 0; i < KBlockLen; ++i) {
             if (i % 8 == 0) {
-                std::cout << ' ';
                 file_out_.PutByte(byte_);
                 byte_ = 0;
             }
@@ -70,6 +69,10 @@ namespace HamArc{
         }
         return ans;
     }
-    
+    template <size_t K>
+    bool HammingCode<K>::DeCodeMsg() {
+        bs_.reset();
+        
+    }
     template class HammingCode<7>;
 }
