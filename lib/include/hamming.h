@@ -17,7 +17,7 @@ public:
         , file_out_(file_out)
         {}
     bool CodeMsg();
-    bool DeCodeMsg();
+    void DeCodeMsg();
 private:
     FileReader& file_in_;
     FileWriter& file_out_;
@@ -25,7 +25,8 @@ private:
     char byte_;
     const size_t kContrBits = K;
     const size_t kBlockLen = (1 << K);
-    void XorContrBits(size_t i);
+    void XorContrBits(size_t i, std::bitset<(1 << K)>& bs_xor);
+    void WriteToFile();
 };
 
 } // namespace HamArc

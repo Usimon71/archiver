@@ -59,8 +59,12 @@ private:
 
 class FileWriter {
 public:
-    FileWriter(std::filesystem::path path) {
-        out_.open(path, std::ios::binary | std::ios::app);
+    FileWriter(std::filesystem::path path, bool app = false) {
+        if (app) {
+            out_.open(path, std::ios::binary | std::ios::app);
+        } else {
+            out_.open(path, std::ios::binary);
+        }
         if (!out_.is_open()) {
             std::cerr << "Unable to open file!\n";
         }
