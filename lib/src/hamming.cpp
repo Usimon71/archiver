@@ -33,6 +33,9 @@ namespace HamArc{
                 if ((bit_count % 8) == 0) {
                     byte_ = file_in_.GetByte();
                     if (byte_ == 0) {
+                        if (i == 3) {
+                            return false;
+                        }
                         ans = false ;
                         break;
                     }

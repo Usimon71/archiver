@@ -3,7 +3,9 @@
 #include <include/ArgParser.h>
 
 int main() {
-    ArgumentParser::ArgParser parser("ArgParser");
-    parser.AddFlag('c', "create");
+    // ArchWriter<7> aw("data/in2", "data/out.haf");
+    // aw.Write();
+    ArchReader<7> ar("data/out.haf", "data/in2");
+    ar.Read();
     return 0;
 }

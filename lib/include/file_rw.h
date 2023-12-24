@@ -26,6 +26,7 @@ public:
             return false;
         }
         size_t sizeof_path = sizeof(std::filesystem::path);
+        std::cout << "size of path: " << sizeof_path << '\n';
         char* path_chr = new char[sizeof_path];
         in_.read(path_chr, sizeof_path);
         std::filesystem::path path_comp(path_chr);
@@ -74,10 +75,11 @@ public:
     }
     void WriteMeta(const std::filesystem::path& path, uint64_t file_size) {
         const char* cpath = path.c_str();
+        std::cout << "size of cpath " << sizeof(cpath) << '\n';
         out_.write(cpath, sizeof(path));
 
         const char* file_size_char = reinterpret_cast<char*>(&file_size);
-        out_.write(file_size_char, sizeof(file_size));
+        out_.write(file_size_char, sizeof(uint64_t));
     }
     ~FileWriter() {
         out_.close();

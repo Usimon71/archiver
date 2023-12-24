@@ -16,10 +16,13 @@ void ArchWriter<K>::Write() {
     FileWriter file_out(out_path_, true);
     
     uint64_t file_sz = GetFileSize(in_path_);
+    std::cout << "file size: " << file_sz << '\n';
     file_out.WriteMeta(in_path_, file_sz);
     
     HamArc::HammingCode<K> ham_code(file_in, file_out);
-    while (ham_code.CodeMsg());
+    while (ham_code.CodeMsg()) {
+        std::cout << "code!\n";
+    }
 }
 
 template class ArchWriter<7>;
