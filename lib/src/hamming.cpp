@@ -134,7 +134,7 @@ namespace HamArc{
         }
         if (sum_all % 2 == 0) {
             if (sum_contr == 0) {
-                std::cout << "No errors detected\n";
+                //std::cout << "No errors detected\n";
                 WriteToFile();
             } else {
                 std::cout << "More than one error in block!\nUnable to extract!\n";

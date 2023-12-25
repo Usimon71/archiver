@@ -9,16 +9,11 @@ bool FileReader::ReadMeta(std::filesystem::path& path, uint64_t& size) {
     std::filesystem::path path_comp(path_chr);
     path = path_comp;
     
-    size_t sizeof_size = sizeof(uint64_t);
-    char* size_chr = new char[sizeof_size];
-    in_.read(size_chr, sizeof_size);
-    uint64_t res = 0;
-    for (size_t i = 0; i != sizeof_size; ++i) {
-        res += (static_cast<uint64_t>(size_chr[i]) << (i * 8));
-    }
+    uint64_t res;
+    in_.read(reinterpret_cast<char*>(&res), sizeof(res));
     size = res;
 
-    delete [] path_chr; delete [] size_chr;
+    delete [] path_chr;
 
     return true;
 }
@@ -26,6 +21,7 @@ bool FileReader::ReadMeta(std::filesystem::path& path, uint64_t& size) {
 void FileWriter::WriteMeta(const std::filesystem::path& path, uint64_t file_size) {
     const char* cpath = path.c_str();
     size_t path_len = std::strlen(cpath);
+    std::cout << "path_len: " << path_len << '\n';
     if (path_len > kFileNameSize) {
         std::cerr << "too long filename!\n";
     }
@@ -40,5 +36,7 @@ void FileWriter::WriteMeta(const std::filesystem::path& path, uint64_t file_size
     }
 
     const char* file_size_char = reinterpret_cast<char*>(&file_size);
-    out_.write(file_size_char, sizeof(uint64_t));
+    for(size_t i = 0; i != 8; ++i) {
+        out_.put(file_size_char[i]);
+    }
 }

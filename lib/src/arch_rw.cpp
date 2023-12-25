@@ -121,7 +121,7 @@ void ArchReader<K>::WriteExcept() {
         byte = file_tmp_r.GetByte();
         file_w.PutByte(byte);
     }
-    //file_tmp_r.DeleteMe("temp.haf");
+    file_tmp_r.DeleteMe("temp.haf");
 }
 
 template class ArchReader<7>;

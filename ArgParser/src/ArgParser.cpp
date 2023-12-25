@@ -71,7 +71,7 @@ std::string ArgParser::HelpDescription() {
         if (arg->GetHasStoreValue()) {
             result += ", stores value to a variable";
         }
-        result += "]\n";
+        result += "]\n  ";
     }
     const std::vector<BoolArg*> bool_args = GetBoolArgs();
     for (BoolArg* arg : bool_args) {
@@ -295,6 +295,7 @@ void ArgParser::RaiseShortFlag(char short_flag) {
             return;
         }
     }
+    std::cout << "short flag: " << short_flag << '\n';
     std::cout << "Invalid flag!\n";
     exit(1);
 }
@@ -310,6 +311,7 @@ void ArgParser::RaiseShortFlags(const std::string_view& arg_sv) {
             }
         }
         if (!found) {
+            std::cout << "long flags: " << arg_sv << '\n';
             std::cout << "Invalid flag!\n";
             exit(1);
         }
@@ -323,7 +325,7 @@ void ArgParser::RaiseLongFlag(const std::string_view& arg_sv) {
             return;
         }
     }
-
+    std::cout << "long flag: " << arg_sv << '\n';
     std::cout <<"Invalid flag!\n";
     exit(1);
 }
@@ -501,6 +503,7 @@ bool ArgParser::Parse(const std::vector<std::string>& args) {
             }
             
             if (arg_sv[1] == '-') {
+                std::cout << "arg_sv " << arg_sv << '\n';
                 if (arg_sv == "--help") {
                     was_help_ = true;
                     std::cout << HelpDescription();
@@ -524,6 +527,7 @@ bool ArgParser::Parse(const std::vector<std::string>& args) {
                         continue;
                     }
                     if (IsShortIntArg(arg_sv[1])) {
+                        std::cout << "here!\n";
                         SetIntShortArg(arg_sv[1], std::stoi(args[i + 1]));
                         ++i;
                         continue;
