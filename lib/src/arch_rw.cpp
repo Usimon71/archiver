@@ -6,7 +6,6 @@ uint64_t ArchWriter<K>::GetFileSize(std::filesystem::path path) {
     std::filesystem::path result_path(base_path_.string() + path.string());
     uint64_t num_of_blocks = (static_cast<uint64_t>(std::ifstream(result_path, std::ios::ate).tellg()) + msg_size - 1) / msg_size;
     uint64_t ans = num_of_blocks * (msg_size + ((K + 1) / 8));
-    // std::cout << "file size " << ans << '\n';
     return ans;
 }
 
@@ -20,12 +19,11 @@ void ArchWriter<K>::Write() {
     file_out.WriteMeta(in_path_, file_sz);
     
     HamArc::HammingCode<K> ham_code(file_in, file_out);
-    while (ham_code.CodeMsg()) {
-        std::cout << "code!\n";
-    }
+    while (ham_code.CodeMsg());
 }
 
 template class ArchWriter<7>;
+template class ArchWriter<15>;
 
 template <size_t K>
 uint64_t ArchReader<K>::SearchFile(FileReader& file, std::filesystem::path& path_out) {
@@ -58,4 +56,19 @@ void ArchReader<K>::Read() {
     }
 }
 
+template <size_t K>
+void ArchReader<K>::ListFiles() {
+    FileReader file_in(in_path_);
+    std::filesystem::path path;
+    uint64_t file_size;
+    uint64_t count = 1;
+    std::cout << "Files in archive " << in_path_ << ":\n";
+    while (file_in.ReadMeta(path, file_size)) {
+        std::cout << count << ". " << path << '\n';
+        file_in.OffsetPtr(file_size);
+        ++count;
+    }
+}
+
 template class ArchReader<7>;
+template class ArchReader<15>;

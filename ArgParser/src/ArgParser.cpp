@@ -275,6 +275,17 @@ void ArgParser::PushPositionalInt(int num) {
     std::cout << "No positional arguments given!\n";
     exit(1);
 }
+bool ArgParser::PushPositionalString(const std::string& num) {
+    std::vector<StringArg*>& int_args = GetStringArgs();
+    for (size_t i = 0; i != int_args.size(); ++i) {
+        if (int_args[i]->GetIsPositional()) {
+            int_args[i]->PushMultVal(num);
+            return true;
+        }
+    }
+    std::cout << "No positional arguments given!\n";
+    return false;
+}
 
 void ArgParser::RaiseShortFlag(char short_flag) {
     std::vector<BoolArg*>& bool_args = GetBoolArgs();
@@ -368,10 +379,12 @@ void ArgParser::SetStringLongArg(const std::string& param, std::string value) {
 }
 void ArgParser::SetStringShortArg(char param, std::string value) {
     std::vector<StringArg*>& string_args = GetStringArgs();
+    std::cout << "here!\n";
     for (size_t i = 0; i != string_args.size(); ++i) {
         if (string_args[i]->GetShortName() == param) {
             if (string_args[i]->GetIsMultValue()) {
                 string_args[i]->PushMultVal(value);
+                
             } else {
                 string_args[i]->SetSingleValue(value);
             }
@@ -434,6 +447,27 @@ bool ArgParser::CheckMinCountMultVal() {
     return true;
 }
 
+bool ArgParser::IsShortStringArg(char arg) {
+    const std::vector<StringArg*> str_args = GetStringArgs();
+    for (StringArg* str_arg : str_args) {
+        if (str_arg->GetShortName() == arg) {
+            return true;
+        }
+    }
+
+    return false;
+}
+bool ArgParser::IsShortIntArg(char arg) {
+    const std::vector<IntArg*> int_args = GetIntArgs();
+    for (IntArg* int_arg : int_args) {
+        if (int_arg->GetShortName() == arg) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 bool ArgParser::Parse(int argc, char** argv) {
     std::vector<std::string> args;
     for (int i = 0; i != argc; ++i) {
@@ -466,10 +500,7 @@ bool ArgParser::Parse(const std::vector<std::string>& args) {
                 PushPositionalInt(std::stoi(args[i]));
                 continue;
             }
-            if (arg_sv.size() == 2 && arg_sv[1] != '-') {
-                RaiseShortFlag(arg_sv[1]);
-                continue;
-            }
+            
             if (arg_sv[1] == '-') {
                 if (arg_sv == "--help") {
                     was_help_ = true;
@@ -487,6 +518,20 @@ bool ArgParser::Parse(const std::vector<std::string>& args) {
                     RaiseLongFlag(arg_sv.substr(2));
                 }
             } else {
+                if (arg_sv.size() == 2) {
+                    if (IsShortStringArg(arg_sv[1])) {
+                        SetStringShortArg(arg_sv[1], args[i + 1]);
+                        ++i;
+                        continue;
+                    }
+                    if (IsShortIntArg(arg_sv[1])) {
+                        SetIntShortArg(arg_sv[1], std::stoi(args[i + 1]));
+                        ++i;
+                        continue;
+                    }
+                    RaiseShortFlag(arg_sv[1]);
+                    continue;
+                }
                 if (IsNotFlag(arg_sv)){
                     ArgParser::ParseItem item = SplitItem(arg_sv.substr(1));
                     if (IsInt(item.value)) {
@@ -500,7 +545,8 @@ bool ArgParser::Parse(const std::vector<std::string>& args) {
             }
         } else if (IsInt(arg_sv)){
             PushPositionalInt(std::stoi(args[i]));
-        } else {
+        } else if (PushPositionalString(args[i])){}
+        else {
             return false;
         }
     }

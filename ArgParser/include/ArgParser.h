@@ -85,6 +85,7 @@ private:
     }
 
     void PushPositionalInt(int num);
+    bool PushPositionalString(const std::string& num);
 
     bool AllHaveValues();
     void UpdateStoreValues();
@@ -97,6 +98,9 @@ private:
     void RaiseShortFlags(const std::string_view& arg_sv);
     void SetIntShortArg(char param, int value);
     void SetStringShortArg(char param, std::string value);
+
+    bool IsShortStringArg(char arg);
+    bool IsShortIntArg(char arg);
     
 };
 } // namespace ArgumentParser

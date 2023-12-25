@@ -149,4 +149,5 @@ namespace HamArc{
     }
     
     template class HammingCode<7>;
+    template class HammingCode<15>;
 }
