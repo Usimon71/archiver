@@ -5,7 +5,7 @@
 #include <cmath>
 #include <cinttypes>
 
-#include "arch_writer.h"
+#include "arch_rw.h"
 
 namespace HamArc {
     

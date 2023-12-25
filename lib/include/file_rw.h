@@ -8,7 +8,8 @@
 class FileReader {
 public:
     FileReader(std::filesystem::path path) {
-        in_.open(path, std::ios::binary);
+        std::filesystem::path result_path(base_path_.string() + path.string());
+        in_.open(result_path, std::ios::binary);
         if (!in_.is_open()) {
             std::cerr << "Unable to open file!\n";
         }
@@ -21,30 +22,7 @@ public:
         }
         return 0;
     }
-    bool ReadMeta(std::filesystem::path& path, uint64_t& size) {
-        if(in_.peek() == EOF) {
-            return false;
-        }
-        size_t sizeof_path = sizeof(std::filesystem::path);
-        std::cout << "size of path: " << sizeof_path << '\n';
-        char* path_chr = new char[sizeof_path];
-        in_.read(path_chr, sizeof_path);
-        std::filesystem::path path_comp(path_chr);
-        path = path_comp;
-        
-        size_t sizeof_size = sizeof(uint64_t);
-        char* size_chr = new char[sizeof_size];
-        in_.read(size_chr, sizeof_size);
-        uint64_t res = 0;
-        for (size_t i = 0; i != sizeof_size; ++i) {
-            res += (static_cast<uint64_t>(size_chr[i]) << (i * 8));
-        }
-        size = res;
-
-        delete [] path_chr; delete [] size_chr;
-
-        return true;
-    }
+    bool ReadMeta(std::filesystem::path& path, uint64_t& size);
     uint64_t TellG() {
         return in_.tellg();
     }
@@ -56,15 +34,18 @@ public:
     }
 private:
     std::ifstream in_;
+    std::filesystem::path base_path_ = "/home/don_simon/Документы/lab6_prog/labwork6-Usimon71/labwork6-Usimon71/data/";
+    const uint8_t kFileNameSize = 30;
 };
 
 class FileWriter {
 public:
     FileWriter(std::filesystem::path path, bool app = false) {
+        std::filesystem::path result_path(base_path_.string() + path.string());
         if (app) {
-            out_.open(path, std::ios::binary | std::ios::app);
+            out_.open(result_path, std::ios::binary | std::ios::app);
         } else {
-            out_.open(path, std::ios::binary);
+            out_.open(result_path, std::ios::binary);
         }
         if (!out_.is_open()) {
             std::cerr << "Unable to open file!\n";
@@ -73,17 +54,12 @@ public:
     void PutByte (char byte) {
         out_.put(byte);
     }
-    void WriteMeta(const std::filesystem::path& path, uint64_t file_size) {
-        const char* cpath = path.c_str();
-        std::cout << "size of cpath " << sizeof(cpath) << '\n';
-        out_.write(cpath, sizeof(path));
-
-        const char* file_size_char = reinterpret_cast<char*>(&file_size);
-        out_.write(file_size_char, sizeof(uint64_t));
-    }
+    void WriteMeta(const std::filesystem::path& path, uint64_t file_size);
     ~FileWriter() {
         out_.close();
     }
 private:
     std::ofstream out_;
+    std::filesystem::path base_path_ = "/home/don_simon/Документы/lab6_prog/labwork6-Usimon71/labwork6-Usimon71/data/";
+    const uint8_t kFileNameSize = 30;
 };

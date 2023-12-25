@@ -1,11 +1,14 @@
-#include <include/arch_writer.h>
-#include <include/arch_reader.h>
+#include <include/arch_rw.h>
 #include <include/ArgParser.h>
 
 int main() {
-    // ArchWriter<7> aw("data/in2", "data/out.haf");
+    // ArchWriter<7> aw("in", "out.haf");
     // aw.Write();
-    ArchReader<7> ar("data/out.haf", "data/in2");
+    // ArchWriter<7> aw2("in2", "out.haf");
+    // aw2.Write();
+    // ArchWriter<7> aw3("in3", "out.haf");
+    // aw3.Write();
+    ArchReader<7> ar("out.haf", "in3");
     ar.Read();
     return 0;
 }
