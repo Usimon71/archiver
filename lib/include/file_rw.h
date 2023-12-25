@@ -22,12 +22,22 @@ public:
         }
         return 0;
     }
+    bool EndOfFile() {
+        if (in_.peek() == EOF) {
+            return true;
+        }
+        return false;
+    }
     bool ReadMeta(std::filesystem::path& path, uint64_t& size);
     uint64_t TellG() {
         return in_.tellg();
     }
     void OffsetPtr(uint64_t n) {
         in_.seekg(n, std::ios_base::cur);
+    }
+    void DeleteMe(std::filesystem::path to_del) {
+        std::filesystem::path result_path(base_path_.string() + to_del.string());
+        remove(result_path);
     }
     ~FileReader() {
         in_.close();

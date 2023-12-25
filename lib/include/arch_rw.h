@@ -30,6 +30,9 @@ public:
         {}
     void Read();
     void ListFiles();
+    void CopyFile();
+    void RemoveExcept(std::filesystem::path to_del);
+    void WriteExcept();
     uint64_t SearchFile(FileReader& file, std::filesystem::path& path_out);
 private:
     std::filesystem::path in_path_;

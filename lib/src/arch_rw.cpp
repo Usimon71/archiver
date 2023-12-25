@@ -70,5 +70,59 @@ void ArchReader<K>::ListFiles() {
     }
 }
 
+template <size_t K>
+void ArchReader<K>::CopyFile() {
+    FileReader file_in(in_path_);
+    FileWriter file_out(out_path_, true);
+    char byte;
+    while(!file_in.EndOfFile()) {
+        byte = file_in.GetByte();
+        file_out.PutByte(byte);
+    }
+}
+template <size_t K>
+void ArchReader<K>::RemoveExcept(std::filesystem::path to_del) {
+    FileReader file_r(in_path_);
+    FileWriter file_tmp_w("temp.haf");
+    std::cout << "to del: " << to_del << '\n';
+    std::filesystem::path path;
+    uint64_t file_size;
+    while (file_r.ReadMeta(path, file_size)) {
+        std::cout << "path: " << path << " file size: " << file_size <<'\n';
+        // std::string temp;
+        // std::cin >> temp;
+        if (path == to_del) {
+            file_r.OffsetPtr(file_size);
+        } else {
+            file_tmp_w.WriteMeta(path, file_size);
+            char byte;
+            for (size_t i = 0; i != file_size; ++i) {
+                byte = file_r.GetByte();
+                file_tmp_w.PutByte(byte);
+            }
+        }
+    }
+    // FileReader file_tmp_r("temp.haf");
+    // FileWriter file_w(in_path_);
+    // char byte;
+    // while(!file_tmp_r.EndOfFile()) {
+    //     byte = file_tmp_r.GetByte();
+    //     file_w.PutByte(byte);
+    // }
+    //file_tmp_r.DeleteMe("temp.haf");
+}
+
+template <size_t K>
+void ArchReader<K>::WriteExcept() {
+    FileReader file_tmp_r("temp.haf");
+    FileWriter file_w(in_path_);
+    char byte;
+    while(!file_tmp_r.EndOfFile()) {
+        byte = file_tmp_r.GetByte();
+        file_w.PutByte(byte);
+    }
+    //file_tmp_r.DeleteMe("temp.haf");
+}
+
 template class ArchReader<7>;
 template class ArchReader<15>;

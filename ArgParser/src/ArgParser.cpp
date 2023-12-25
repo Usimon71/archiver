@@ -71,7 +71,7 @@ std::string ArgParser::HelpDescription() {
         if (arg->GetHasStoreValue()) {
             result += ", stores value to a variable";
         }
-        result += "]";
+        result += "]\n";
     }
     const std::vector<BoolArg*> bool_args = GetBoolArgs();
     for (BoolArg* arg : bool_args) {
@@ -379,7 +379,6 @@ void ArgParser::SetStringLongArg(const std::string& param, std::string value) {
 }
 void ArgParser::SetStringShortArg(char param, std::string value) {
     std::vector<StringArg*>& string_args = GetStringArgs();
-    std::cout << "here!\n";
     for (size_t i = 0; i != string_args.size(); ++i) {
         if (string_args[i]->GetShortName() == param) {
             if (string_args[i]->GetIsMultValue()) {
