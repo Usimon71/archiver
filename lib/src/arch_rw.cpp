@@ -19,6 +19,7 @@ void ArchWriter<K>::Write(bool app) {
     file_out.WriteMeta(in_path_, file_sz);
     
     HamArc::HammingCode<K> ham_code(file_in, file_out);
+    ham_code.single_mistake = true;
     while (ham_code.CodeMsg());
 }
 

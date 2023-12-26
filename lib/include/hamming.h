@@ -18,11 +18,14 @@ public:
         {}
     bool CodeMsg();
     void DeCodeMsg();
+    bool single_mistake = false;
+    bool double_mistake = false;
 private:
     FileReader& file_in_;
     FileWriter& file_out_;
     std::bitset<(1 << K)> bs_;
-    char byte_;
+    char byte_ = 0;
+    
     const size_t kContrBits = K;
     const size_t kBlockLen = (1 << K);
     void XorContrBits(size_t i, std::bitset<(1 << K)>& bs_xor);

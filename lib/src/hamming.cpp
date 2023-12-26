@@ -24,6 +24,7 @@ namespace HamArc{
 
     template <size_t K>
     bool HammingCode<K>::CodeMsg() {
+        uint8_t count_mistakes = 0;
         bs_.reset();
         bool ans = true;
         size_t cur_contr_bit_pos = 1;
@@ -65,7 +66,13 @@ namespace HamArc{
                 byte_ = 0;
             }
             if (bs_[i]) {
-                BitSet(byte_, (i % 8));
+                if (single_mistake && count_mistakes == 0 && i > 0) {
+                    std::cout << "Let single mistake\n";
+                    ++count_mistakes;
+                } else {
+                    BitSet(byte_, (i % 8));
+                }
+                
             }
         }
         file_out_.PutByte(byte_);
