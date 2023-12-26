@@ -10,7 +10,7 @@ public:
         : in_path_(in_path)
         , out_path_(out_path)
         {}
-    void Write();
+    void Write(bool app);
     uint64_t GetFileSize(std::filesystem::path path);
 private:
     std::filesystem::path in_path_;
@@ -29,6 +29,7 @@ public:
         : in_path_(in_path)
         {}
     void Read();
+    void ReadAll();
     void ListFiles();
     void CopyFile();
     void RemoveExcept(std::filesystem::path to_del);

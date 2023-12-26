@@ -10,9 +10,9 @@ uint64_t ArchWriter<K>::GetFileSize(std::filesystem::path path) {
 }
 
 template <size_t K>
-void ArchWriter<K>::Write() {
+void ArchWriter<K>::Write(bool app) {
     FileReader file_in(in_path_);
-    FileWriter file_out(out_path_, true);
+    FileWriter file_out(out_path_, app);
     
     uint64_t file_sz = GetFileSize(in_path_);
     std::cout << "file size: " << file_sz << '\n';
@@ -56,6 +56,21 @@ void ArchReader<K>::Read() {
     }
 }
 
+template <size_t K>
+void ArchReader<K>::ReadAll() {
+    FileReader file_in(in_path_);
+    std::filesystem::path path;
+    uint64_t file_size;
+    size_t block_size = (1 << K) / 8;
+    while (file_in.ReadMeta(path, file_size)) {
+        uint64_t num_of_blocks = file_size / block_size;
+        FileWriter file_out(path, false);
+        HamArc::HammingCode<K> ham_code(file_in, file_out);
+        for (size_t i = 0; i != num_of_blocks; ++i) {
+            ham_code.DeCodeMsg();
+        }
+    }
+}
 template <size_t K>
 void ArchReader<K>::ListFiles() {
     FileReader file_in(in_path_);
