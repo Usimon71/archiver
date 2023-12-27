@@ -12,6 +12,7 @@ public:
         in_.open(result_path, std::ios::binary);
         if (!in_.is_open()) {
             std::cerr << "Unable to open file!\n";
+            std::cout << result_path << "\n";
         }
     }
     char GetByte() {
@@ -44,7 +45,7 @@ public:
     }
 private:
     std::ifstream in_;
-    std::filesystem::path base_path_ = "/home/don_simon/Документы/lab6_prog/labwork6-Usimon71/labwork6-Usimon71/data/";
+    std::filesystem::path base_path_ = "/home/don_simon/Документы/ITMO_IS_1semester/proga/labwork6-Usimon71/data/";
     const uint8_t kFileNameSize = 30;
 };
 
@@ -58,6 +59,7 @@ public:
             out_.open(result_path, std::ios::binary);
         }
         if (!out_.is_open()) {
+            
             std::cerr << "Unable to open file!\n";
         }
     }
@@ -70,6 +72,6 @@ public:
     }
 private:
     std::ofstream out_;
-    std::filesystem::path base_path_ = "/home/don_simon/Документы/lab6_prog/labwork6-Usimon71/labwork6-Usimon71/data/";
+    std::filesystem::path base_path_ = "/home/don_simon/Документы/ITMO_IS_1semester/proga/labwork6-Usimon71/data/";
     const uint8_t kFileNameSize = 30;
 };

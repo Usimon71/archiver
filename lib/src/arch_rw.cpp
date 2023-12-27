@@ -10,16 +10,19 @@ uint64_t ArchWriter<K>::GetFileSize(std::filesystem::path path) {
 }
 
 template <size_t K>
-void ArchWriter<K>::Write(bool app) {
+void ArchWriter<K>::Write(bool app, bool single_mistake, bool double_mistake) {
     FileReader file_in(in_path_);
     FileWriter file_out(out_path_, app);
     
     uint64_t file_sz = GetFileSize(in_path_);
     std::cout << "file size: " << file_sz << '\n';
     file_out.WriteMeta(in_path_, file_sz);
-    
     HamArc::HammingCode<K> ham_code(file_in, file_out);
-    ham_code.single_mistake = true;
+    if (single_mistake) {
+        ham_code.single_mistake = true;
+    } else if (double_mistake) {
+        ham_code.double_mistake = true;
+    }
     while (ham_code.CodeMsg());
 }
 

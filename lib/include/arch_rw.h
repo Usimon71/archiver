@@ -10,12 +10,12 @@ public:
         : in_path_(in_path)
         , out_path_(out_path)
         {}
-    void Write(bool app);
+    void Write(bool app, bool single_mistake = false, bool double_mistake = false);
     uint64_t GetFileSize(std::filesystem::path path);
 private:
     std::filesystem::path in_path_;
     std::filesystem::path out_path_;
-    std::filesystem::path base_path_ = "/home/don_simon/Документы/lab6_prog/labwork6-Usimon71/labwork6-Usimon71/data/";
+    std::filesystem::path base_path_ = "/home/don_simon/Документы/ITMO_IS_1semester/proga/labwork6-Usimon71/data/";
 };
 
 template <size_t K>

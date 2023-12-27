@@ -66,10 +66,14 @@ namespace HamArc{
                 byte_ = 0;
             }
             if (bs_[i]) {
-                if (single_mistake && count_mistakes == 0 && i > 0) {
+                if (single_mistake && count_mistakes == 0 && i > 10) {
                     std::cout << "Let single mistake\n";
                     ++count_mistakes;
-                } else {
+                } else if (double_mistake && count_mistakes < 2) {
+                    std::cout << "Let single mistake(double in general)\n";
+                    ++count_mistakes;
+                }
+                else {
                     BitSet(byte_, (i % 8));
                 }
                 
@@ -137,14 +141,13 @@ namespace HamArc{
         }
         uint64_t sum_all = 0;
         for (size_t i = 0; i != kBlockLen; ++i) {
-            sum_all += bs_[i];
+            sum_all += result[i];
         }
         if (sum_all % 2 == 0) {
             if (sum_contr == 0) {
-                //std::cout << "No errors detected\n";
                 WriteToFile();
             } else {
-                std::cout << "More than one error in block!\nUnable to extract!\n";
+                std::cerr << "More than one error in block!\nUnable to extract!\n";
             }
         } else {
             std::cout << "Error detected!\n";
