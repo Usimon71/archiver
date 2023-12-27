@@ -19,16 +19,12 @@ int main(int argc, char** argv) {
     parser.AddStringArgument("files").MultiValue().Positional().StoreValues(opt.filenames).Default(empty_v);
     parser.AddIntArgument('p', "parity", "Number of parity bits in block (7/15)").StoreValue(opt.k).Default(7);
     parser.AddHelp('h', "help", "help");
+    parser.AddStringArgument('b', "basedir", "Base directory for r/w ").StoreValue(opt.base_dir).Default("/home/don_simon/Документы/ITMO_IS_1semester/proga/labwork6-Usimon71/data/");
     
     if (!parser.Parse(argc, argv)) {
-        std::cout << "list: " << opt.list << '\n';
         std::cerr << "Wrong arguments\n";
         std::cout << parser.HelpDescription();
     } else {
-        // std::cout << opt.archive_filename <<'\n';
-        // for (int i = 0; i != opt.filenames.size(); ++i) {
-        //     std::cout << opt.filenames[i] << '\n';
-        // }
         Archiver arch(opt);
         arch.Run();
     }

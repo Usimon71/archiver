@@ -52,7 +52,7 @@ namespace HamArc{
             }
         }
         uint64_t sum = 0;
-        for (size_t i = 0; i != kBlockLen; ++i) {
+        for (size_t i = 1; i != kBlockLen; ++i) {
             sum += bs_[i];
         }
         if ((sum % 2) != 0) {
@@ -66,7 +66,7 @@ namespace HamArc{
                 byte_ = 0;
             }
             if (bs_[i]) {
-                if (single_mistake && count_mistakes == 0 && i > 10) {
+                if (single_mistake && count_mistakes == 0) {
                     std::cout << "Let single mistake\n";
                     ++count_mistakes;
                 } else if (double_mistake && count_mistakes < 2) {
@@ -141,7 +141,7 @@ namespace HamArc{
         }
         uint64_t sum_all = 0;
         for (size_t i = 0; i != kBlockLen; ++i) {
-            sum_all += result[i];
+            sum_all += bs_[i];
         }
         if (sum_all % 2 == 0) {
             if (sum_contr == 0) {

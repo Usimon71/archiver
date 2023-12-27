@@ -12,6 +12,7 @@ struct Options {
     bool del{};
     bool concatenate{};
     std::string archive_filename{};
+    std::string base_dir{};
     std::vector<std::string> filenames{};
     int k{};
 };

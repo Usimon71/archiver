@@ -7,8 +7,10 @@
 
 class FileReader {
 public:
-    FileReader(std::filesystem::path path) {
-        std::filesystem::path result_path(base_path_.string() + path.string());
+    FileReader(std::filesystem::path path, std::filesystem::path base_dir) 
+        : base_dir_(base_dir)
+    {
+        std::filesystem::path result_path(base_dir_.string() + path.string());
         in_.open(result_path, std::ios::binary);
         if (!in_.is_open()) {
             std::cerr << "Unable to open file!\n";
@@ -37,7 +39,7 @@ public:
         in_.seekg(n, std::ios_base::cur);
     }
     void DeleteMe(std::filesystem::path to_del) {
-        std::filesystem::path result_path(base_path_.string() + to_del.string());
+        std::filesystem::path result_path(base_dir_.string() + to_del.string());
         remove(result_path);
     }
     ~FileReader() {
@@ -45,14 +47,16 @@ public:
     }
 private:
     std::ifstream in_;
-    std::filesystem::path base_path_ = "/home/don_simon/Документы/ITMO_IS_1semester/proga/labwork6-Usimon71/data/";
+    std::filesystem::path base_dir_ = "/home/don_simon/Документы/ITMO_IS_1semester/proga/labwork6-Usimon71/data/";
     const uint8_t kFileNameSize = 30;
 };
 
 class FileWriter {
 public:
-    FileWriter(std::filesystem::path path, bool app = false) {
-        std::filesystem::path result_path(base_path_.string() + path.string());
+    FileWriter(std::filesystem::path path, std::filesystem::path base_dir, bool app = false) 
+        : base_dir_(base_dir)
+    {
+        std::filesystem::path result_path(base_dir_.string() + path.string());
         if (app) {
             out_.open(result_path, std::ios::binary | std::ios::app);
         } else {
@@ -72,6 +76,6 @@ public:
     }
 private:
     std::ofstream out_;
-    std::filesystem::path base_path_ = "/home/don_simon/Документы/ITMO_IS_1semester/proga/labwork6-Usimon71/data/";
+    std::filesystem::path base_dir_ = "/home/don_simon/Документы/ITMO_IS_1semester/proga/labwork6-Usimon71/data/";
     const uint8_t kFileNameSize = 30;
 };

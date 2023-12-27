@@ -3,7 +3,7 @@
 template <size_t K>
 uint64_t ArchWriter<K>::GetFileSize(std::filesystem::path path) {
     uint64_t msg_size = ((1 << K) - K - 1) / 8;
-    std::filesystem::path result_path(base_path_.string() + path.string());
+    std::filesystem::path result_path(base_dir_.string() + path.string());
     uint64_t num_of_blocks = (static_cast<uint64_t>(std::ifstream(result_path, std::ios::ate).tellg()) + msg_size - 1) / msg_size;
     uint64_t ans = num_of_blocks * (msg_size + ((K + 1) / 8));
     return ans;
@@ -11,8 +11,8 @@ uint64_t ArchWriter<K>::GetFileSize(std::filesystem::path path) {
 
 template <size_t K>
 void ArchWriter<K>::Write(bool app, bool single_mistake, bool double_mistake) {
-    FileReader file_in(in_path_);
-    FileWriter file_out(out_path_, app);
+    FileReader file_in(in_path_, base_dir_);
+    FileWriter file_out(out_path_, base_dir_, app);
     
     uint64_t file_sz = GetFileSize(in_path_);
     std::cout << "file size: " << file_sz << '\n';
@@ -47,14 +47,12 @@ uint64_t ArchReader<K>::SearchFile(FileReader& file, std::filesystem::path& path
 
 template <size_t K>
 void ArchReader<K>::Read() {
-    FileReader file_in(in_path_);
-    FileWriter file_out(out_path_, false);
+    FileReader file_in(in_path_, base_dir_);
+    FileWriter file_out(out_path_, base_dir_, false);
     uint64_t code_size = SearchFile(file_in, out_path_);
     HamArc::HammingCode<K> ham_code(file_in, file_out);
     size_t block_size = (1 << K) / 8;
     uint64_t num_of_blocks = code_size / block_size;
-    std::cout << "code size: " << code_size << '\n';
-    std::cout << "num of blocks: " << num_of_blocks <<'\n';
     for (size_t i = 0; i != num_of_blocks; ++i) {
         ham_code.DeCodeMsg();
     }
@@ -62,13 +60,13 @@ void ArchReader<K>::Read() {
 
 template <size_t K>
 void ArchReader<K>::ReadAll() {
-    FileReader file_in(in_path_);
+    FileReader file_in(in_path_, base_dir_);
     std::filesystem::path path;
     uint64_t file_size;
     size_t block_size = (1 << K) / 8;
     while (file_in.ReadMeta(path, file_size)) {
         uint64_t num_of_blocks = file_size / block_size;
-        FileWriter file_out(path, false);
+        FileWriter file_out(path, base_dir_, false);
         HamArc::HammingCode<K> ham_code(file_in, file_out);
         for (size_t i = 0; i != num_of_blocks; ++i) {
             ham_code.DeCodeMsg();
@@ -77,7 +75,7 @@ void ArchReader<K>::ReadAll() {
 }
 template <size_t K>
 void ArchReader<K>::ListFiles() {
-    FileReader file_in(in_path_);
+    FileReader file_in(in_path_, base_dir_);
     std::filesystem::path path;
     uint64_t file_size;
     uint64_t count = 1;
@@ -91,8 +89,8 @@ void ArchReader<K>::ListFiles() {
 
 template <size_t K>
 void ArchReader<K>::CopyFile() {
-    FileReader file_in(in_path_);
-    FileWriter file_out(out_path_, true);
+    FileReader file_in(in_path_, base_dir_);
+    FileWriter file_out(out_path_, base_dir_, true);
     char byte;
     while(!file_in.EndOfFile()) {
         byte = file_in.GetByte();
@@ -101,15 +99,12 @@ void ArchReader<K>::CopyFile() {
 }
 template <size_t K>
 void ArchReader<K>::RemoveExcept(std::filesystem::path to_del) {
-    FileReader file_r(in_path_);
-    FileWriter file_tmp_w("temp.haf");
-    std::cout << "to del: " << to_del << '\n';
+    FileReader file_r(in_path_, base_dir_);
+    FileWriter file_tmp_w("temp.haf", base_dir_);
+    std::cout << to_del << " deleted\n";
     std::filesystem::path path;
     uint64_t file_size;
     while (file_r.ReadMeta(path, file_size)) {
-        std::cout << "path: " << path << " file size: " << file_size <<'\n';
-        // std::string temp;
-        // std::cin >> temp;
         if (path == to_del) {
             file_r.OffsetPtr(file_size);
         } else {
@@ -121,26 +116,24 @@ void ArchReader<K>::RemoveExcept(std::filesystem::path to_del) {
             }
         }
     }
-    // FileReader file_tmp_r("temp.haf");
-    // FileWriter file_w(in_path_);
-    // char byte;
-    // while(!file_tmp_r.EndOfFile()) {
-    //     byte = file_tmp_r.GetByte();
-    //     file_w.PutByte(byte);
-    // }
-    //file_tmp_r.DeleteMe("temp.haf");
 }
 
 template <size_t K>
 void ArchReader<K>::WriteExcept() {
-    FileReader file_tmp_r("temp.haf");
-    FileWriter file_w(in_path_);
+    FileReader file_tmp_r("temp.haf", base_dir_);
+    FileWriter file_w(in_path_, base_dir_);
     char byte;
     while(!file_tmp_r.EndOfFile()) {
         byte = file_tmp_r.GetByte();
         file_w.PutByte(byte);
     }
     file_tmp_r.DeleteMe("temp.haf");
+}
+
+template <size_t K>
+void ArchReader<K>::Delete(std::filesystem::path to_del) {
+    RemoveExcept(to_del);
+    WriteExcept();
 }
 
 template class ArchReader<7>;
