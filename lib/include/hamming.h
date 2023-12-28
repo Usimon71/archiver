@@ -29,7 +29,12 @@ private:
     const size_t kContrBits = K;
     const size_t kBlockLen = (1 << K);
     void XorContrBits(size_t i, std::bitset<(1 << K)>& bs_xor);
-    void WriteToFile();
+    bool ProcessBytes(bool& ans);
+    void CalcZeroBit();
+    void WriteToFileCode();
+    void WriteToFileDecode();
+    void CopyBytesToBs();
+    void ReCalcParity(uint64_t& sum_contr, uint64_t& sum_all);
 };
 
 } // namespace HamArc

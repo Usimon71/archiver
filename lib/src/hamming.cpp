@@ -23,10 +23,7 @@ namespace HamArc{
     }
 
     template <size_t K>
-    bool HammingCode<K>::CodeMsg() {
-        uint8_t count_mistakes = 0;
-        bs_.reset();
-        bool ans = true;
+    bool HammingCode<K>::ProcessBytes(bool& ans) {
         size_t cur_contr_bit_pos = 1;
         char bit_count = 0;
         for (size_t i = 1; i != kBlockLen; ++i) {
@@ -51,6 +48,12 @@ namespace HamArc{
                 cur_contr_bit_pos *= 2;
             }
         }
+
+        return true;
+    }
+
+    template <size_t K>
+    void HammingCode<K>::CalcZeroBit() {
         uint64_t sum = 0;
         for (size_t i = 1; i != kBlockLen; ++i) {
             sum += bs_[i];
@@ -58,8 +61,12 @@ namespace HamArc{
         if ((sum % 2) != 0) {
             bs_[0].flip();
         }
+    }
+
+    template <size_t K>
+    void HammingCode<K>::WriteToFileCode() {
         byte_ = 0;
-        int count_change = 0;
+        uint8_t count_mistakes = 0;
         for (size_t i = 0; i < kBlockLen; ++i) {
             if (i % 8 == 0 && i != 0) {
                 file_out_.PutByte(byte_);
@@ -81,39 +88,51 @@ namespace HamArc{
         }
         file_out_.PutByte(byte_);
         byte_ = 0;
+    }
+
+    template <size_t K>
+    bool HammingCode<K>::CodeMsg() {
+        bs_.reset();
+        bool ans = true;
+        if (!ProcessBytes(ans)) {
+            return false;
+        }
+        CalcZeroBit();
+        WriteToFileCode();
+        
         return ans;
     }
 
     template <size_t K>
-    void HammingCode<K>::WriteToFile() {
+    void HammingCode<K>::WriteToFileDecode() {
         size_t cur_contr_bit_pos = 1;
-            char bit_count = 0;
-            byte_ = 0;
-            for (size_t i = 1; i != kBlockLen; ++i) {
-                if (i != cur_contr_bit_pos) {
-                    if (bit_count % 8 == 0 && i > 4) {
-                        if (byte_ != 0) {
-                            file_out_.PutByte(byte_);
-                        }
-                        bit_count = 0;
-                        byte_ = 0;
+        char bit_count = 0;
+        byte_ = 0;
+        for (size_t i = 1; i != kBlockLen; ++i) {
+            if (i != cur_contr_bit_pos) {
+                if (bit_count % 8 == 0 && i > 4) {
+                    if (byte_ != 0) {
+                        file_out_.PutByte(byte_);
                     }
-                    if (bs_[i]) {
-                        BitSet(byte_, bit_count);
-                    }
-                    ++bit_count;
-                } else {
-                    cur_contr_bit_pos *= 2;
+                    bit_count = 0;
+                    byte_ = 0;
                 }
+                if (bs_[i]) {
+                    BitSet(byte_, bit_count);
+                }
+                ++bit_count;
+            } else {
+                cur_contr_bit_pos *= 2;
             }
-            if (byte_ != 0) {
-                file_out_.PutByte(byte_);
-            }
-            byte_ = 0;
+        }
+        if (byte_ != 0) {
+            file_out_.PutByte(byte_);
+        }
+        byte_ = 0;
     }
 
     template <size_t K>
-    void HammingCode<K>::DeCodeMsg() {
+    void HammingCode<K>::CopyBytesToBs() {
         bs_.reset();
         char bit_count = 0;
         for (size_t i = 0; i != kBlockLen; ++i) {
@@ -126,26 +145,37 @@ namespace HamArc{
             }
             ++bit_count;
         }
+    }
 
+    template <size_t K>
+    void HammingCode<K>::ReCalcParity(uint64_t& sum_contr, uint64_t& sum_all) {
         std::bitset<(1 << K)> result;
         for (size_t i = 1; i != kBlockLen; ++i) {
             if (bs_[i]) {
                 XorContrBits(i, result);
             }
         }
-        uint64_t sum_contr = 0;
+
         for (size_t i = 1; i < kBlockLen; i *= 2) {
             if(result[i]) {
                 sum_contr += i;
             }
         }
-        uint64_t sum_all = 0;
+
         for (size_t i = 0; i != kBlockLen; ++i) {
             sum_all += bs_[i];
         }
+    }
+
+    template <size_t K>
+    void HammingCode<K>::DeCodeMsg() {
+        CopyBytesToBs();
+        uint64_t sum_contr = 0;
+        uint64_t sum_all = 0;
+        ReCalcParity(sum_contr, sum_all);
         if (sum_all % 2 == 0) {
             if (sum_contr == 0) {
-                WriteToFile();
+                WriteToFileDecode();
             } else {
                 std::cerr << "More than one error in block!\nUnable to extract!\n";
             }
@@ -154,7 +184,7 @@ namespace HamArc{
             std::cout << "Error in " << sum_contr << " bit\n";
             bs_[sum_contr].flip();
             std::cout << "Error fixed!\n";
-            WriteToFile();
+            WriteToFileDecode();
         }
     }
     
