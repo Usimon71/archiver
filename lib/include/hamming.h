@@ -17,7 +17,7 @@ public:
         , file_out_(file_out)
         {}
     bool CodeMsg();
-    void DeCodeMsg();
+    void DeCodeMsg(bool last_block = false);
     bool single_mistake = false;
     bool double_mistake = false;
 private:
@@ -25,14 +25,13 @@ private:
     FileWriter& file_out_;
     std::bitset<(1 << K)> bs_;
     char byte_ = 0;
-    
     const size_t kContrBits = K;
     const size_t kBlockLen = (1 << K);
     void XorContrBits(size_t i, std::bitset<(1 << K)>& bs_xor);
-    bool ProcessBytes(bool& ans);
+    void ProcessBytes(bool& ans);
     void CalcZeroBit();
     void WriteToFileCode();
-    void WriteToFileDecode();
+    void WriteToFileDecode(bool last_block);
     void CopyBytesToBs();
     void ReCalcParity(uint64_t& sum_contr, uint64_t& sum_all);
 };

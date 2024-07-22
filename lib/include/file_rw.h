@@ -11,7 +11,7 @@ public:
         : base_dir_(base_dir)
     {
         std::filesystem::path result_path(base_dir_.string() + path.string());
-        in_.open(result_path, std::ios::binary);
+        in_.open(result_path, std::ios::binary | std::ios::in);
         if (!in_.is_open()) {
             std::cerr << "Unable to open file!\n";
             std::cout << result_path << "\n";
@@ -29,6 +29,7 @@ public:
         if (in_.peek() == EOF) {
             return true;
         }
+        
         return false;
     }
     bool ReadMeta(std::filesystem::path& path, uint64_t& size);
@@ -58,16 +59,16 @@ public:
     {
         std::filesystem::path result_path(base_dir_.string() + path.string());
         if (app) {
-            out_.open(result_path, std::ios::binary | std::ios::app);
+            out_.open(result_path, std::ios::binary | std::ios::app | std::ios::out);
         } else {
-            out_.open(result_path, std::ios::binary);
+            out_.open(result_path, std::ios::binary| std::ios::out);
         }
         if (!out_.is_open()) {
             
             std::cerr << "Unable to open file!\n";
         }
     }
-    void PutByte (char byte) {
+    void PutByte(char byte) {
         out_.put(byte);
     }
     void WriteMeta(const std::filesystem::path& path, uint64_t file_size);

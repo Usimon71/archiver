@@ -6,6 +6,7 @@ uint64_t ArchWriter<K>::GetFileSize(std::filesystem::path path) {
     std::filesystem::path result_path(base_dir_.string() + path.string());
     uint64_t num_of_blocks = (static_cast<uint64_t>(std::ifstream(result_path, std::ios::ate).tellg()) + msg_size - 1) / msg_size;
     uint64_t ans = num_of_blocks * (msg_size + ((K + 1) / 8));
+    
     return ans;
 }
 
@@ -42,6 +43,7 @@ uint64_t ArchReader<K>::SearchFile(FileReader& file, std::filesystem::path& path
         file.OffsetPtr(file_size);
     }
     std::cerr << "File not found!\n";
+    
     return 0;
 }
 
@@ -53,9 +55,10 @@ void ArchReader<K>::Read() {
     HamArc::HammingCode<K> ham_code(file_in, file_out);
     size_t block_size = (1 << K) / 8;
     uint64_t num_of_blocks = code_size / block_size;
-    for (size_t i = 0; i != num_of_blocks; ++i) {
+    for (size_t i = 0; i != num_of_blocks - 1; ++i) {
         ham_code.DeCodeMsg();
     }
+    ham_code.DeCodeMsg(true);
 }
 
 template <size_t K>

@@ -28,5 +28,6 @@ int main(int argc, char** argv) {
         Archiver arch(opt);
         arch.Run();
     }
+    
     return 0;
 }
