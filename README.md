@@ -48,5 +48,3 @@ Console application that supports the following command line arguments:
 *hamarc -l -f ARCHIVE*
 
 *hamarc --contenate ARCHIVE1 ARCHIVE2 -f ARCHIVE3*
-
-**default data folder is
